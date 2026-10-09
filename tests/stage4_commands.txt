@@ -1,0 +1,9 @@
+ls
+cd /home/student
+ls
+uname
+uname -a
+cal 2026
+cal 10 2026
+uptime
+exit

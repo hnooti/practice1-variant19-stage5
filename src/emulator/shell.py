@@ -40,7 +40,7 @@ class ShellEmulator:
         if not tokens:
             return ShellResult()
         command, *args = tokens
-        handlers = {'ls': self.cmd_ls, 'cd': self.cmd_cd, 'exit': self.cmd_exit}
+        handlers = {'ls': self.cmd_ls, 'cd': self.cmd_cd, 'uname': self.cmd_uname, 'cal': self.cmd_cal, 'uptime': self.cmd_uptime, 'exit': self.cmd_exit}
         handler = handlers.get(command)
         if handler is None:
             raise ShellCommandError(f'{command}: неизвестная команда')
@@ -57,11 +57,63 @@ class ShellEmulator:
             raise ShellCommandError(f'{command}: неверное количество аргументов')
 
     def cmd_ls(self, args: list[str]) -> ShellResult:
-        print('ls', *args)
+        self._require_arg_count('ls', args, 0, 1)
+        target = self.vfs.resolve(self.cwd, args[0] if args else self.cwd)
+        entries = self.vfs.list_dir(target)
+        if entries:
+            print('  '.join(entries))
         return ShellResult()
 
     def cmd_cd(self, args: list[str]) -> ShellResult:
-        print('cd', *args)
+        self._require_arg_count('cd', args, 0, 1)
+        target = self.vfs.resolve(self.cwd, args[0] if args else '/')
+        if not self.vfs.is_dir(target):
+            raise ShellCommandError(f'cd: нет такого каталога: {(args[0] if args else target)}')
+        self.cwd = target
+        return ShellResult()
+
+    def cmd_uname(self, args: list[str]) -> ShellResult:
+        self._require_arg_count('uname', args, 0, 1)
+        info = platform.uname()
+        if not args:
+            print(info.system or 'EmuOS')
+        elif args[0] == '-a':
+            print(' '.join((str(x) for x in info)))
+        else:
+            raise ShellCommandError('uname: поддерживается только опция -a')
+        return ShellResult()
+
+    def cmd_cal(self, args: list[str]) -> ShellResult:
+        if len(args) == 0:
+            now = time.localtime()
+            print(calendar.month(now.tm_year, now.tm_mon), end='')
+        elif len(args) == 1:
+            try:
+                year = int(args[0])
+            except ValueError as exc:
+                raise ShellCommandError('cal: год должен быть целым числом') from exc
+            print(calendar.calendar(year), end='')
+        elif len(args) == 2:
+            try:
+                month = int(args[0])
+                year = int(args[1])
+            except ValueError as exc:
+                raise ShellCommandError('cal: месяц и год должны быть целыми числами') from exc
+            if month < 1 or month > 12:
+                raise ShellCommandError('cal: месяц должен быть от 1 до 12')
+            print(calendar.month(year, month), end='')
+        else:
+            raise ShellCommandError('cal: использование: cal [год] | cal [месяц год]')
+        return ShellResult()
+
+    def cmd_uptime(self, args: list[str]) -> ShellResult:
+        self._require_arg_count('uptime', args, 0, 0)
+        seconds = int(time.monotonic() - self.started_at)
+        days, rem = divmod(seconds, 86400)
+        hours, rem = divmod(rem, 3600)
+        minutes, secs = divmod(rem, 60)
+        prefix = f'{days} day(s), ' if days else ''
+        print(f'up {prefix}{hours:02d}:{minutes:02d}:{secs:02d}')
         return ShellResult()
 
     def cmd_exit(self, args: list[str]) -> ShellResult:
