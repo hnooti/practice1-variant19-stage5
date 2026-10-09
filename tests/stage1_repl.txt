@@ -4,4 +4,7 @@ ls
 cd "student"
 ls
 unknown-command
+ls "file with spaces"
+cd "unterminated
+exit extra
 exit

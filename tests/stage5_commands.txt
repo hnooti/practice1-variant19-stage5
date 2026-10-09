@@ -1,0 +1,15 @@
+ls /
+touch /created.txt
+ls /
+rmdir /empty
+ls /
+vfs-load vfs/alt_vfs.zip
+ls /
+touch
+touch /missing/new.txt
+rmdir /home
+rmdir /missing
+vfs-load /missing.zip
+vfs-load config/default.json
+vfs-load
+exit

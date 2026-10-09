@@ -1,4 +1,4 @@
 {
   "vfs_path": "vfs/sample_vfs.zip",
-  "startup_script": "tests/stage4_commands.txt"
+  "startup_script": "tests/full_demo.txt"
 }

@@ -1,0 +1,36 @@
+# Демонстрация всей реализованной функциональности.
+ls
+cd home
+ls
+cd student
+ls
+touch "new file.txt"
+ls
+cd docs
+ls
+cd /
+uname
+uname -a
+cal 10 2026
+uptime
+
+# Обработка ошибок
+unknown-command
+cd /no-such-dir
+cal 99 2026
+rmdir /home/student/docs
+
+# Модификации только в памяти
+touch /tmp.txt
+ls /
+rmdir /empty
+ls /
+
+# Перезагрузка VFS
+vfs-load vfs/alt_vfs.zip
+ls
+cd /alpha/beta
+ls
+touch "created in memory.txt"
+ls
+exit

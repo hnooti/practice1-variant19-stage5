@@ -6,4 +6,11 @@ uname -a
 cal 2026
 cal 10 2026
 uptime
+cal
+cal nope
+cal 13 2026
+uname --bad
+uptime extra
+ls /missing
+cd /missing
 exit

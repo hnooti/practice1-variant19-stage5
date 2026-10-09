@@ -3,4 +3,8 @@ cd /home/student/docs
 ls
 cd /level1/level2/level3
 ls
+cd /missing
+ls /missing
+ls /bin
+cd ../../../../
 exit
